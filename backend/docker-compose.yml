@@ -1,0 +1,15 @@
+version: "3.2"
+
+services:
+  database:
+    container_name: pm_postgres
+    image: postgres
+    restart: always
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data
+    environment:
+      - LC_ALL=C.UTF-8
+      - POSTGRES_PASSWORD=Senhasegura159@
+      - POSTGRES_USER=pm
+    ports:
+      - 5432:5432

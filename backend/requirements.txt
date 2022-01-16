@@ -1,0 +1,5 @@
+- Requirements dev
+
+yay -S mailhog-bin
+mailhog (run mailhog)
+

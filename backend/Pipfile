@@ -1,0 +1,29 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages] 
+django = "*"
+djangorestframework = "*"
+drf-yasg = "*"
+djoser = "*"
+django-axes = "*"
+python-decouple = "*"
+dj-database-url = "*"
+psycopg2-binary = "*"
+django-s3-folder-storage = "*"
+sentry-sdk = "*"
+django-anymail = "*"
+gunicorn = "*"
+django-role-permissions = "*"
+
+[dev-packages]
+django-extensions = "*"
+ipython = "*"
+neovim = "*"
+# faker = "*"
+# ropevim = "*"
+
+[requires]
+python_version = "3.9"
