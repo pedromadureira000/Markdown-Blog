@@ -9,7 +9,7 @@ services:
       - ./.pgdata:/var/lib/postgresql/data
     environment:
       - LC_ALL=C.UTF-8
-      - POSTGRES_PASSWORD=Senhasegura159@
+      - POSTGRES_PASSWORD=senhasegura
       - POSTGRES_USER=pm
     ports:
       - 5432:5432

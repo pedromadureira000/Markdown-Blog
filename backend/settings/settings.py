@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_extensions',
     'anymail',
     'djoser',
     'rolepermissions',
@@ -60,6 +59,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'drf_yasg'
 ]
+
+if DEBUG:
+    INSTALLED_APPS.append('django_extensions')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
