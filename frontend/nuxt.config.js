@@ -1,7 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
+import {messages} from './messages'
 
 const _isdev = process.env.DEV
-// import pt from 'vuetify/es5/locale/pt'
 
 export default {
 
@@ -31,9 +31,8 @@ export default {
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-		// {src: '@/plugins/axios', ssr: false},
-		// '@/plugins/axios',
 		'@/plugins/vuetify',
+		'~/plugins/myFunctions',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -49,19 +48,46 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-		'@nuxtjs/proxy',
+    '@nuxtjs/i18n',
+    '@nuxtjs/proxy',
   ],
 
-  // Axios module configuration: https://go.nuxtjs.dev/config-axios
-	axios: {
-		// credentials: true,
-	},
+  i18n: {
+    locales: ['pt-BR', 'en'],
+    strategy: 'prefix_except_default',
+    defaultLocale: 'pt-BR',
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: 'lang',
+      redirectOn: 'root',  // recommended
+    },
+    parsePages: false,   // Disable babel parsing. To use custom pages
+    // If a custom path is missing for one of the locales, the defaultLocale custom path is used, if set.
+    pages: {
+      about: {
+        en: 'about',
+        'pt-BR': '/sobre',
+      },
+      myaccount: {
+        en: '/my-account',
+        'pt-BR': '/minha-conta',
+      },
+      // Organization
+      // 'admin/organization': {
+        // en: '/admin/organization',
+        // 'pt-BR': '/admin/organizacao',
+      // },
+    },
+    vueI18n: {
+      fallbackLocale: 'pt-BR',
+      messages: messages
+    }
+  },
 
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      // dark: true,
       dark: false,
       themes: {
         dark: {
@@ -75,10 +101,6 @@ export default {
         }
       }
     },
-    // lang: {
-      // locales: { pt },
-      // current: 'pt'
-    // },
   },
 
 	// Build Configuration: https://go.nuxtjs.dev/config-build
@@ -89,6 +111,10 @@ export default {
 				// implementation: require('sass'),
 			// },
 		// },
+		extend (config, ctx) {
+			const home = config.resolve.alias['~']
+			config.resolve.alias['~api'] = home + '/helpers/api' 
+		}
 	},
 
 	proxy: _isdev ? {
@@ -99,11 +125,9 @@ export default {
 		'vuetify'
 	],
 
-	env: {
-		// test: process.env.test || 'test'
-	},
-	
-  // router: {
-    // middleware: ['fwdcookies', 'auth']
-  // },
+  publicRuntimeConfig: {
+    email: process.env.EMAIL,
+    phone_number: process.env.PHONE_NUMBER,
+    company_name: process.env.COMPANY_NAME
+  },	
 }

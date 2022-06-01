@@ -5,6 +5,8 @@ export interface RootState {
     showAlert: boolean;
     alertID: number
   },
+  connectionError: boolean,
+  CDNBaseUrl: string
 }
 
 export const state = (): RootState => ({
@@ -14,6 +16,9 @@ export const state = (): RootState => ({
     showAlert: false,
     alertID: 0
   },
+  connectionError: false,
+  // @ts-ignore
+  CDNBaseUrl: process.env.DEV ? 'http://localhost:8000' : process.env.CDN_URL
 });
 
 import { MutationTree } from "vuex";
@@ -34,13 +39,16 @@ export const mutations: MutationTree<RootState> = {
       alertID: state.alert.alertID
     };
   },
-  // removeOneFromAlertqueue(state){
-    // state.alert.alertqueue = state.alert.alertqueue - 1
-  // }
+  switchConnectionError(state, value: boolean){
+    state.connectionError = value
+  }
 
 };
 
-import { ActionTree, Commit } from "vuex";
+ // @ts-ignore: This module is dynamically added in nuxt.config.js
+import api from "~api"
+// import {ErrorHandler} from "~/helpers/functions";
+import { ActionTree, Commit, Dispatch } from "vuex";
 export const actions: ActionTree<RootState, RootState> = {
   setAlert({ commit, state }: { commit: Commit, state: RootState }, 
            payload: {alertMessage: string, alertType: string, timeout?: number}) {
@@ -56,9 +64,36 @@ export const actions: ActionTree<RootState, RootState> = {
       let current_alert = state.alert.alertID
       setTimeout(() => {
         if (state.alert.alertID == current_alert) {
-          commit("removeAlert")
+          if (state.alert.alertType !== "error"){
+            commit("removeAlert")
+          }
         }
       }, payload.timeout);
     }, timeout);
   },
+
+  removeAlert({ commit}: { commit: Commit}){
+    commit('removeAlert')
+  },
+  switchConnectionError({ commit}: { commit: Commit}, value: boolean){
+    commit('switchConnectionError', value)
+  },
+
+	async testConnection() {
+		try {
+			await api.getCsrf() 
+      return 'ok'
+		} catch (error) {
+      // console.log(">>>>>>> ", error)
+		}
+	},
+
+  // async testFF({commit, dispatch}: {commit: Commit, dispatch: Dispatch}){
+    // try {
+      // await api.testFF()
+    // }
+    // catch(error){
+      // ErrorHandler(error, commit, dispatch, this.app.i18n, 'testFF final error')
+    // }
+  // }
 };
