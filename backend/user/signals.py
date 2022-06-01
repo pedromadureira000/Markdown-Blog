@@ -7,10 +7,3 @@ from settings import settings
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)  # every time a user was created, a token will be generated fo that user.
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def assign_default_roles(sender, instance=None, created=False, **kwargs):
-    if created:
-        #  assign_role(instance, 'reports')
-        pass

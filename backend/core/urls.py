@@ -1,22 +1,13 @@
 from django.urls import path
-from django.urls.conf import include
-#  from rest_framework.authtoken.views import obtain_auth_token
-from core.views import (
-    CheckAuthenticatedView, LoginView, LogoutView, GetCSRFToken, CreateUserView, UpdateUserPassword, DeleteAccountView, GetAllUsers, UpdateUser
-)
 
+from core.views import MenuView, PageView, SpecificMenu, SpecificPage, SpecificSubMenu, SubMenuView
+
+app_name = 'core'
 urlpatterns = [
-    path('login', LoginView.as_view()),
-    path('logout', LogoutView.as_view()),
-    path('getcsrf', GetCSRFToken.as_view()),
-    path('checkauth', CheckAuthenticatedView.as_view()),
-    path('createuser', CreateUserView.as_view()),
-    #  path('update_user_profile', updateUserProfile.as_view()),
-    path('update_user', UpdateUser.as_view()),
-    path('update_user_password', UpdateUserPassword.as_view()),
-    path('passwordreset/', include('djoser.urls')),
-    path('delete/<str:username>', DeleteAccountView.as_view(), name='deleteAccount'),
-    path('getusers', GetAllUsers.as_view(), name='deleteAccount'),
-    #  path('tokenauth/', include('djoser.urls.authtoken')),
-    #  path('gettoken', obtain_auth_token, name='gettoken'),
+    path('menu', MenuView.as_view()),
+    path('menu/<slug>', SpecificMenu.as_view()),
+    path('submenu', SubMenuView.as_view()),
+    path('submenu/<submenu_id>', SpecificSubMenu.as_view()), 
+    path('page', PageView.as_view()),
+    path('page/<page_id>', SpecificPage.as_view()), 
 ]

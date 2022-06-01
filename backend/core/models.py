@@ -1,137 +1,36 @@
-from django.apps import apps
-from django.contrib import auth
-from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.hashers import make_password
-from django.core.mail import send_mail
 from django.db import models
-from django.utils.translation import gettext_lazy as _
-from rolepermissions.roles import assign_role
+from django.db.models.constraints import UniqueConstraint
+from django_resized import ResizedImageField
 
-
-class UserManager(BaseUserManager):
-    use_in_migrations = True
-
-    def _create_user(self, username, password, **extra_fields):
-        """
-        Create and save a user with the given username, and password.
-        """
-        #  email = self.normalize_email(email)
-        # Lookup the real model class from the global app registry so this
-        # manager method can be used in migrations. This is fine because
-        # managers are by definition working on the real model.
-        GlobalUserModel = apps.get_model(self.model._meta.app_label, self.model._meta.object_name)
-        username = GlobalUserModel.normalize_username(username)
-        user = self.model(username=username, **extra_fields)
-        user.password = make_password(password)
-        user.save(using=self._db)
-
-        if user.is_superuser:
-            assign_role(user, 'admin')
-
-        return user
-
-    def create_user(self, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', False)
-        extra_fields.setdefault('is_superuser', False)
-        return self._create_user(username, password, **extra_fields)
-
-    def create_superuser(self, username, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
-        return self._create_user(username, password, **extra_fields)
-
-    def with_perm(self, perm, is_active=True, include_superusers=True, backend=None, obj=None):
-        if backend is None:
-            backends = auth._get_backends(return_tuples=True)
-            if len(backends) == 1:
-                backend, _ = backends[0]
-            else:
-                raise ValueError(
-                    'You have multiple authentication backends configured and '
-                    'therefore must provide the `backend` argument.'
-                )
-        elif not isinstance(backend, str):
-            raise TypeError(
-                'backend must be a dotted import path string (got %r).'
-                % backend
-            )
-        else:
-            backend = auth.load_backend(backend)
-        if hasattr(backend, 'with_perm'):
-            return backend.with_perm(
-                perm,
-                is_active=is_active,
-                include_superusers=include_superusers,
-                obj=obj,
-            )
-        return self.none()
-
-
-class User(AbstractBaseUser, PermissionsMixin):
-    """
-    App User 'User Class'
-
-    Username and password are required. Other fields are optional.
-    """
-
-
-    username = models.CharField(
-        _('username'),
-        unique = True,
-        max_length=150,
-        help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-    )
-    email = models.EmailField(_('email address'), unique=True)
-
-    is_staff = models.BooleanField(
-        _('staff status'),
-        default=False,
-        help_text=_('Designates whether the user can log into this admin site.'),
-    )
-    is_active = models.BooleanField(
-        _('active'),
-        default=True,
-        help_text=_(
-            'Designates whether this user should be treated as active. '
-            'Unselect this instead of deleting accounts.'
-        ),
-    )
-
-    objects = UserManager()
-
-    EMAIL_FIELD = 'email'
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-    # REQUIRED_FIELDS must contain all required fields on your user model, but should not contain the USERNAME_FIELD or
-    # password as these fields will always be prompted for.
-
+class Menu(models.Model):
     class Meta:
-        verbose_name = _('user')
-        verbose_name_plural = _('users')
+        default_permissions = []
+    slug = models.SlugField("Slug", max_length=25, primary_key=True)
+    default_submenu = models.ForeignKey('SubMenu', blank=True, null=True, on_delete=models.PROTECT, related_name='default_submenu_option')
+    title = models.CharField("Title", max_length=30)
+    icon = models.CharField("Icon", max_length=15)
 
-    def clean(self):
-        super().clean()
-        self.email = self.__class__.objects.normalize_email(self.email)
 
-    def get_full_name(self):
-        """
-        Return the first_name plus the last_name, with a space in between.
-        """
-        full_name = '%s %s' % (self.first_name, self.last_name)
-        return full_name.strip()
+class SubMenu(models.Model):
+    class Meta:
+        default_permissions = []
+        constraints = [UniqueConstraint(fields=['slug', 'menu',], name='Submenu compound id')]
+    submenu_id = models.CharField("Submenu compound id", max_length=50, primary_key=True)
+    slug = models.SlugField("Slug", max_length=25)
+    menu = models.ForeignKey('Menu', on_delete=models.PROTECT)
+    title = models.CharField("Title", max_length=30)
+    icon = models.CharField("Icon", max_length=15)
 
-    def get_short_name(self):
-        """Return the short name for the user."""
-        return self.first_name
-
-    def email_user(self, subject, message, from_email=None, **kwargs):
-        """Send an email to this user."""
-        send_mail(subject, message, from_email, [self.email], **kwargs)
-
+class Page(models.Model):
+    class Meta:
+        default_permissions = []
+        #  verbose_name = _('order')
+        #  verbose_name_plural = _('orders')
+        constraints = [UniqueConstraint(fields=['slug', 'submenu'], name='Page compound id')]
+    page_id = models.CharField("Page compound id", max_length=75, primary_key=True)
+    slug = models.SlugField("Slug", max_length=25)
+    submenu = models.ForeignKey('SubMenu', on_delete=models.PROTECT)
+    title = models.CharField("Title", max_length=30)
+    description = models.CharField(max_length=200)
+    image = ResizedImageField(size=[345, 261], quality=90, upload_to='images/page/', blank=True, null=True)
+    markdown_text = models.TextField("Markdown text")

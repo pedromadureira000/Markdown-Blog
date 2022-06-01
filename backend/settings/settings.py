@@ -19,8 +19,6 @@ from decouple import config, Csv
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
-import datetime
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -34,27 +32,23 @@ DEBUG = config('DEBUG', cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
+AUTH_USER_MODEL = 'user.User'
+
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS = ['http://localhost:3000'] 
+
 ADMIN_ENABLED = DEBUG
-
-# Auth User model
-AUTH_USER_MODEL = 'core.User'
-
-ROLEPERMISSIONS_MODULE = 'core.roles'
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    'user',
     'core',
-    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'anymail',
-    'djoser',
-    'rolepermissions',
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg'
@@ -63,11 +57,16 @@ INSTALLED_APPS = [
 if DEBUG:
     INSTALLED_APPS.append('django_extensions')
 
+if DEBUG:
+    #  INSTALLED_APPS.append('django.contrib.staticfiles')
+    INSTALLED_APPS.append('django.contrib.admin')
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -93,70 +92,41 @@ TEMPLATES = [
 ]
 
 AUTHENTICATION_BACKENDS = [
-    # AxesBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
-    #  'axes.backends.AxesBackend',
-
     # Django ModelBackend is the default authentication backend.
     'django.contrib.auth.backends.ModelBackend',
 ]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication', #'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.TokenAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '60/min',
+        'user': '10/second'
+    }
 }
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
-DJOSER = {
-        "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
-        "EMAIL": {
-            "password_reset": "core.email.PasswordResetEmail"
-        },
-        "PERMISSIONS":{
-            'password_reset': ['rest_framework.permissions.AllowAny'],
-            'password_reset_confirm': ['rest_framework.permissions.AllowAny'],
-            'activation': ['rest_framework.permissions.IsAdminUser'],
-            'set_password': ['rest_framework.permissions.IsAdminUser'],
-            'username_reset': ['rest_framework.permissions.IsAdminUser'],
-            'username_reset_confirm': ['rest_framework.permissions.IsAdminUser'],
-            'set_username': ['rest_framework.permissions.IsAdminUser'],
-            'user_create': ['rest_framework.permissions.IsAdminUser'],
-            'user_delete': ['rest_framework.permissions.IsAdminUser'],
-            'user': ['rest_framework.permissions.IsAdminUser'],
-            'user_list': ['rest_framework.permissions.IsAdminUser'],
-            'token_create': ['rest_framework.permissions.IsAdminUser'],
-            'token_destroy': ['rest_framework.permissions.IsAdminUser'],
-
-        }
-    }
-
-
-# SMTP
+# Debug tool bar
 if DEBUG:
-    CSRF_TRUSTED_ORIGINS = ['http://localhost:3000', 'http://localhost:8000/'] 
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    DEFAULT_FROM_EMAIL = "webmaster@localhost"
-    EMAIL_HOST = "localhost"
-    EMAIL_PORT = "1025"
-    EMAIL_HOST_USER = ""
-    EMAIL_HOST_PASSWORD = ""
-    EMAIL_USE_TLS = False
-
-else: 
-    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-    DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
-    SERVER_EMAIL = config('SERVER_EMAIL')
-    ANYMAIL = {'MAILGUN_API_KEY': config('MAILGUN_API_KEY'),
-               'MAILGUN_SENDER_DOMAIN': config('MAILGUN_SENDER_DOMAIN'),
-               }
-
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+    }
+    import socket 
+    hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+    INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
 
 # Sentry
-
 SENTRY_DSN = config('SENTRY_DSN', default=None)
 if SENTRY_DSN:
     sentry_sdk.init(
@@ -171,7 +141,7 @@ if SENTRY_DSN:
 
 default_db_url = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
-parse_database = partial(dj_database_url.parse, conn_max_age=600)
+parse_database = partial(dj_database_url.parse, conn_max_age=0)
 
 DATABASES = {
     'default': config('DATABASE_URL', default=default_db_url, cast=parse_database)
@@ -203,7 +173,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en'
+LANGUAGE_COOKIE_NAME = 'lang'
+
+LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'America/Sao_Paulo'
 
@@ -256,11 +228,3 @@ if AWS_ACCESS_KEY_ID:
     STATIC_ROOT = f'/{STATIC_S3_PATH}/'
     STATIC_URL = f'//{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{STATIC_S3_PATH}/'
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
-
-# axex
-AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = datetime.timedelta(seconds=5)
-AXES_ONLY_USER_FAILURES = True
-
-# Session age: 60s * 60m * 24h * 7d
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
