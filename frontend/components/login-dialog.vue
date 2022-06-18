@@ -8,7 +8,7 @@
                 required
                 v-model="username"
                 :error-messages="usernameErrors"
-                :label="$t('Username')"
+                label="Username"
                 @blur="$v.username.$touch()"
                 type="text"
                 name="username"
@@ -16,18 +16,9 @@
               ></v-text-field>
               <v-text-field
                 required
-                v-model="contracting_code"
-                :error-messages="contracting_codeErrors"
-                :label="$t('Contracting_code')"
-                @blur="$v.contracting_code.$touch()"
-                type="text"
-                autocomplete="off"
-              ></v-text-field>
-              <v-text-field
-                required
                 v-model="password"
                 :error-messages="passwordErrors"
-                :label="$t('Password')"
+                label="Password"
                 @blur="$v.password.$touch()"
                 @keyup.enter="login"
                 type="password"
@@ -53,9 +44,8 @@ export default {
 
   validations: {
     username: { required, slugFieldValidator},
-    contracting_code: {required, slugFieldValidator},
     password: { required },
-    login_group:["username", "contracting_code", "password"]
+    login_group:["username", "password"]
   },
 
   data () {
@@ -63,7 +53,6 @@ export default {
       visible: false,
       loading: false,
       username: '',
-      contracting_code: null,
       password: '',
     }
   },
@@ -76,7 +65,6 @@ export default {
       this.visible = false
       // clear form fields
       this.username = ""
-      this.contracting_code = ""
       this.password = ""
       this.$v.$reset()
     },
@@ -86,12 +74,11 @@ export default {
         this.$store.dispatch("setAlert", { message: this.$t("Please_fill_the_form_correctly"), alertType: "error" }, { root: true })
       } else {
         this.loading = true
-        await this.$store.dispatch('user/login', {username: this.username, contracting_code: this.contracting_code, password: this.password} )
+        await this.$store.dispatch('user/login', {username: this.username, password: this.password} )
         if (this.$store.state.user.currentUser){
           this.visible = false
           // clear form fields
           this.username = ""
-          this.contracting_code = ""
           this.password = ""
           this.$v.$reset()
         }      
@@ -106,13 +93,6 @@ export default {
       if (!this.$v.username.$dirty) return errors;
       !this.$v.username.slugFieldValidator && errors.push(this.$t('SlugFieldErrorMessage'));
       !this.$v.username.required && errors.push(this.$t("This_field_is_required"));
-      return errors;
-    },
-    contracting_codeErrors() {
-      const errors = [];
-      if (!this.$v.contracting_code.$dirty) return errors;
-      !this.$v.contracting_code.slugFieldValidator && errors.push(this.$t('SlugFieldErrorMessage'));
-      !this.$v.contracting_code.required && errors.push(this.$t("This_field_is_required"));
       return errors;
     },
     passwordErrors() {

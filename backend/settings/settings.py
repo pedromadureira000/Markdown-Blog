@@ -98,7 +98,8 @@ AUTHENTICATION_BACKENDS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.SessionAuthentication',
+        #  'rest_framework.authentication.TokenAuthentication'
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -228,3 +229,6 @@ if AWS_ACCESS_KEY_ID:
     STATIC_ROOT = f'/{STATIC_S3_PATH}/'
     STATIC_URL = f'//{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{STATIC_S3_PATH}/'
     ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+
+# Session age: 60s * 60m * 24h * 7d
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7

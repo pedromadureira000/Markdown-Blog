@@ -1,42 +1,60 @@
+class User {
+	username!: string;
+	email!: string;
+}
+
 export interface UserState {
-  authenticated: boolean,
+	currentUser: User | null,
+	csrftoken: string,
 }
 
 export const state = (): UserState => ({
-  authenticated: false,
+	currentUser: null,
+	csrftoken: "",
 })  
 
-// --------------------------------------------/MUTATIONS/---------------------------------------------
-
-import {MutationTree} from "vuex"
-import {ErrorHandler} from "~/helpers/functions";
-
-export const mutations: MutationTree<UserState> = { 
-	authenticate(state) {
-		state.authenticated = true;
-	},
-	deauthenticate(state) {
-		state.authenticated = false;
-	},
-}
 // ------------------------------------------/ACTIONS/-------------------------------------------
 
 import {ActionTree, Commit, Dispatch} from "vuex"
 import {RootState} from "@/store/index"
  // @ts-ignore: This module is dynamically added in nuxt.config.js
 import api from "~api"
-import axios from '~/plugins/axios'
 
 export const actions: ActionTree<UserState, RootState> = {
 
-	async login({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, payload: any){
+// -----------------------------------------/ Auth API
+	
+	async checkAuthenticated({commit, dispatch}: {commit: Commit, dispatch: Dispatch}) {
 		try {
-			let auth_token = await api.login(payload)
-      axios.defaults.headers.common['Authorization'] = 'token ' + auth_token;
-			dispatch("authenticate")
-			dispatch("setAlert", {message: this.app.i18n.t('login_success_msg'), alertType: "success"}, { root: true })
+			let data: any = await api.checkAuthenticated()
+			commit("SET_USER", data);
+		} catch (error) {
+      ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("checkAuthenticated_error_msg"))
+		}	
+	},
+
+	getCsrf({commit, dispatch}: {commit: Commit, dispatch: Dispatch}) {
+		try {
+			api.getCsrf() 
+			commit("setCsrf");
+		} catch (error) {
+      ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("getCsrf_error_msg"))
+		}
+	},
+
+	async login({commit, dispatch, state}: {commit: Commit, dispatch: Dispatch, state: UserState}, payload: any){
+		payload["csrftoken"] = state.csrftoken
+		try {
+			let data = await api.login(payload)
+      if (data === "O usuário já está autenticado" || data === "User is already authenticated"){
+        await dispatch("checkAuthenticated");
+      }
+      else{
+        commit("SET_USER", data);
+        commit("setCsrf");
+        dispatch("setAlert", {message: this.app.i18n.t('login_success_msg'), alertType: "success"}, { root: true })
+      }
 		} catch(error){
-      console.log(">>>>>>> login error: ", error)
         ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("login_error_msg"))
 		}
 	},
@@ -44,29 +62,72 @@ export const actions: ActionTree<UserState, RootState> = {
 	async logout({commit, dispatch}: {commit: Commit, dispatch: Dispatch}){
 		try {
 		await api.logout()
-    axios.defaults.headers.common['Authorization'] = '' 
-    delete axios.defaults.headers.common.Authorization // TODO Test it
-		dispatch("deauthenticate")
+		commit("deleteUser");
 		dispatch("setAlert", {message: this.app.i18n.t('logout_success_msg'), alertType: "success"}, { root: true })
 		this.$router.push("/")
 		} catch (error) {
-      console.log(">>>>>>> logout error: ", error)
       ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("logout_error_msg"))
 		}
 	},
 
-	// async updateOwnPassword({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, payload: any){
+	// async updateCurrentUserProfile({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, payload: any){
 		// try {
-			// await api.updateOwnPassword(payload)
-			// commit("deleteUser")
-			// dispatch("setAlert", {message: this.app.i18n.t('updatePassword_success_msg'), alertType: "success"}, { root: true })
-			// setTimeout(() => {
-				// this.$router.push("/")
-			// }, 600);
+      // let data = await api.updateCurrentUserProfile(payload)
+      // commit("SET_USER", data )
+      // dispatch("setAlert", {message: this.app.i18n.t('updateCurrentUserProfile_succes_msg'), alertType: "success"}, { root: true })
 		// }
 		// catch(error){
-      // ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("updatePassword_error_msg"))
+        // ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("updateCurrentUserProfile_error_msg"))
 		// }
 	// },
 
+	async updateOwnPassword({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, payload: any){
+		try {
+			await api.updateOwnPassword(payload)
+      commit("deleteUser")
+			dispatch("setAlert", {message: this.app.i18n.t('updatePassword_success_msg'), alertType: "success"}, { root: true })
+      setTimeout(() => {
+        this.$router.push("/")
+      }, 600);
+		}
+		catch(error){
+      ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("updatePassword_error_msg"))
+		}
+	},
+
+}
+
+// --------------------------------------------/MUTATIONS/---------------------------------------------
+
+import {MutationTree} from "vuex"
+import {ErrorHandler} from "~/helpers/functions";
+
+export const mutations: MutationTree<UserState> = { 
+	SET_USER(state, user: User) {
+		state.currentUser = user;
+	},
+	deleteUser(state) {
+		state.currentUser = null;
+	},
+
+	setCsrf(state) {
+		let name = "csrftoken"
+		let cookieValue = "";
+		if (document.cookie && document.cookie !== "") {
+			const cookies = document.cookie.split(";");
+			for (let i = 0; i < cookies.length; i++) {
+				const cookie = cookies[i].trim();
+				// Does this cookie string begin with the name we want?
+				if (cookie.substring(0, name.length + 1) === name + "=") {
+					cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+					break;
+				}
+			}
+		}
+
+		state.csrftoken = cookieValue;
+	},
+	setCsrfOnServer(state, token: string){
+		state.csrftoken = token
+	},
 }

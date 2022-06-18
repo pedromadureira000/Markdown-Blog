@@ -37,7 +37,7 @@ import {Commit, Dispatch} from "vuex"
 export const ErrorHandler = (error: any, commit: Commit, dispatch: Dispatch, i18n: any, 
                             default_error_msg: any = i18n.t('Something_went_wrong')  ) => { 
   // User
-  let common_user_fields = ['username', 'email', 'status', 'password']
+  let common_user_fields = ['username', 'email', 'password']
   // Core
   let core_fields = ['slug', 'default_submenu', 'title', 'icon', 'submenu_id', 'menu', 'page_id', 'submenu', 'description', 'image',
     'markdown_text']
@@ -45,15 +45,9 @@ export const ErrorHandler = (error: any, commit: Commit, dispatch: Dispatch, i18
   let field_list = common_user_fields.concat(core_fields)
   // let nested_field_list = []
 
-  // error.response.data = null  // <<- this line is for test some errors
   // -----------/ Time-out Error
   if (error.message == 'timeout of 15000ms exceeded'){
     dispatch("setAlert", {message: i18n.t("Request_Time_out"), alertType: "error"}, { root: true })
-  } 
-  // ----------/ Internet Connection Error
-  else if (error.message === 'Network Error'){
-    //  "To dispatch actions or commit mutations in the global namespace, pass { root: true } as the 3rd argument to dispatch and commit."
-    dispatch("switchConnectionError", true,{ root: true }) 
   } 
   else if (error.response && error.response.data){
     let response = error.response

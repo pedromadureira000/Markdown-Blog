@@ -1,11 +1,12 @@
 <template>
   <v-app>
 		<v-navigation-drawer v-model="drawer" app> 
-      <v-list two-line v-if="is_authenticated">
+      <v-list two-line v-if="logged_user">
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title>{{is_authenticated ? $t('Welcome') : 'not welcome'}}</v-list-item-title>
-            <v-list-item-subtitle>this is a subtitle</v-list-item-subtitle>
+            <v-list-item-subtitle>Username: {{logged_user.username}}</v-list-item-subtitle>
+            <!-- <v-list-item-subtitle v-if="hasRoleOtherThenClientUser">{{$t('Role')}}: {{$t(logged_user.roles[0])}}</v-list-item-subtitle> -->
+            <!-- <v-list-item-subtitle v-if="currentUserIsClientUser">{{$t('Client')}}: {{logged_user.client.split('*')[2] + ' - ' + logged_user.client_name}}</v-list-item-subtitle> -->
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -34,9 +35,8 @@
         <nuxt-link :to="switchLocalePath('en')">English</nuxt-link>
         <nuxt-link :to="switchLocalePath('pt-BR')">Português</nuxt-link>
         <!-- <nuxt-link :to="localePath('admin-organization-company')">TEST</nuxt-link> -->
-        <v-btn label="testFF" @click="testFF"/>
+        <!-- <v-btn label="testFF" @click="testFF"/> -->
       </v-card>
-      <!-- Test Button -->
 
     </v-navigation-drawer>
     <!-- App bar -->
@@ -45,13 +45,13 @@
         @click="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Blogs title</v-toolbar-title>
+      <v-toolbar-title>{{$t('Blog_title')}}</v-toolbar-title>
 
       <v-spacer></v-spacer>
-      <h5 v-if="is_authenticated">This will appear it the user is authenticated</h5>
+      <h5 v-if="logged_user">{{logged_user.username}}</h5>
 
 			<v-btn 
-				v-if="!is_authenticated"
+				v-if="!logged_user"
 				text
 				dark
 				ripple
@@ -87,10 +87,6 @@
 
     <login-dialog ref="login_dialog"/>
 
-    <session-error-dialog/>
-
-    <problem-connecting-error-dialog/>
-
     <!-- Alert -->
     <div>
         <!-- dismissible -->
@@ -111,14 +107,12 @@
 <script>
 import footer from '~/components/Footer.vue';
 import loginDialog from '~/components/login-dialog.vue'
-import problemConnectingErrorDialog from '~/components/problem-connecting-dialog.vue'
 
 export default {
 	name: "default",
 	middleware: ['fwdcookies', 'check_auth'],
   components: {
     loginDialog,
-    problemConnectingErrorDialog,
     leFooter: footer
   },
 
@@ -127,13 +121,10 @@ export default {
       drawer: null,
       defaultMenuItems: [
         { title: "Home", icon: "mdi-home", to: "index" },
-        { title: "About the system", icon: "mdi-help-box", to: "about" },
+        { title: "About_the_site", icon: "mdi-help-box", to: "about" },
       ],
       allMenuItems: [
-        {permissions: organizationPermissions, title: "Organizations", icon: "mdi-clipboard-check-multiple", to: "admin-organization"},
-        {permissions: usersMenuPermissions , title: "Users", icon: "mdi-account-group", to: "admin-user"},
-        {permissions: itemsMenuPermissions, title: "Items", icon: "mdi-cart-variant", to: "admin-item"},
-        {permissions: orderPermissions, title: "Orders", icon: "mdi-clipboard-check-multiple", to: "client-order"},
+        /** {permissions: organizationPermissions, title: "Organizations", icon: "mdi-clipboard-check-multiple", to: "admin-organization"}, */
       ],
     }
   },
@@ -151,12 +142,16 @@ export default {
       /** console.log(">>>>>>> process.env.XX: ", process.env.DEV) */
       /** this.$store.dispatch("testFF") */
       
-      /** this.$store.dispatch("setAlert", {message: "erro rah rr erro rah rr erro rah rr erro rah rrerro rah rr erro rah rrerro rah rr erro rah rrerro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rrerro rah rr erro rah rrerro rah rr erro rah rrerro rah rr erro rah rr erro rah rr erro rah rr erro rah rr erro rah rr", alertType: "error"}, { root: true }) */
+      /** this.$store.dispatch("setAlert", {message: "erro rah r rarro rah rr", alertType: "error"}, { root: true }) */
     /** }, */
 
   },
 
   computed: {
+		logged_user(){
+			return this.$store.state.user.currentUser
+		},
+
     is_authenticated(){
       return this.$store.state.user.authenticated
     },
@@ -187,13 +182,6 @@ export default {
   transform: translate(-50%, -50%);
   z-index: 999;
 }
-/** .alert_message{ */
-	/** position: fixed; */
-	/** left: 50%; */
-	/** top: 85%; */
-	/** transform: translate(-50%, -50%); */
-	/** z-index: 999; */
-/** } */
 .v-application .pa-3 {
 	padding: 14px !important;
 }

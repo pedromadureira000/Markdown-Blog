@@ -7,15 +7,16 @@ export default {
     return await axios.get("/api/user/check_authenticated").then((data)=> {return data.data})
 	},
 
-	// async getCsrf(){
-		// return await axios.get("/api/user/getcsrf").then(() => {})
-	// },
+  async getCsrf(){
+    return await axios.get("/api/user/getcsrf").then(() => {})
+  },
 
 	async login(payload){ 
 		return await axios({
 			method: "post",
-			url: "/api/user/gettoken",
-			data: { username: payload.username, password: payload.password},
+			url: "/api/user/login",
+			data: { username: payload.username, password: payload.password },
+			headers: { "X-CSRFToken": payload.csrftoken },
 		})
 			.then((response) => {
 				return response.data
@@ -30,18 +31,31 @@ export default {
 				.then(() => {})
 		},
 
-	// async updateOwnPassword(payload){
+	// async updateCurrentUserProfile(payload){
 		// return await axios({ 
 		// method: "put",
-		// url: "/api/user/update_own_password",
+		// url: "/api/user/own_profile",
 		// data:{
-			// current_password: payload.current_password,
-			// password: payload.password,
+			// username: payload.username,
+			// email: payload.email,
 		// }
 			// }).then((request) => {
 					// return request.data 
 				// })
 	// },
+
+  async updateOwnPassword(payload){
+    return await axios({ 
+    method: "put",
+    url: "/api/user/update_own_password",
+    data:{
+      current_password: payload.current_password,
+      password: payload.password,
+    }
+      }).then((request) => {
+          return request.data 
+        })
+  },
 
 }
 

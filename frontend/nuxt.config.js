@@ -7,8 +7,8 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    titleTemplate: '%s - frontend',
-    title: 'frontend',
+    titleTemplate: 'My Blog',
+    title: 'My Blog',
     htmlAttrs: {
       lang: 'en'
     },
