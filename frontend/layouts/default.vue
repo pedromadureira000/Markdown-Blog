@@ -124,7 +124,7 @@ export default {
         { title: "About_the_site", icon: "mdi-help-box", to: "about" },
       ],
       allMenuItems: [
-        /** {permissions: organizationPermissions, title: "Organizations", icon: "mdi-clipboard-check-multiple", to: "admin-organization"}, */
+        {title: "Admin", icon: "mdi-cog", to: "admin"},
       ],
     }
   },
@@ -152,14 +152,10 @@ export default {
 			return this.$store.state.user.currentUser
 		},
 
-    is_authenticated(){
-      return this.$store.state.user.authenticated
-    },
-
     /** Calculates which Menus the CurrentUser has access and return it concatenated with 
     defaultMenuItems (between Home and About_the_system page). */
 		currentMenuItems() {
-			if (this.$store.state.user.authenticated) {
+			if (this.$store.state.user.currentUser) {
 				return this.defaultMenuItems
 					.slice(0, 1)
           .concat(this.allMenuItems)

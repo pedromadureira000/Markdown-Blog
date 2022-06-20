@@ -15,7 +15,7 @@ class MenuView(APIView):
     @swagger_auto_schema(method='get', responses={200: MenuSerializer(many=True)}) 
     @action(detail=False, methods=['get'])
     def get(self, request):
-        menus = Menu.objects.all()  
+        menus = Menu.objects.select_related('default_submenu').all()  
         return Response(MenuSerializer(menus, many=True).data)
     @swagger_auto_schema(request_body=MenuSerializer) 
     @transaction.atomic
@@ -24,18 +24,19 @@ class MenuView(APIView):
         if serializer.is_valid():
             try:
                 serializer.save()
-                return Response(_('The menu was created.'))
+                return Response(serializer.data)
             except Exception:
                 transaction.rollback()
                 return unknown_exception_response(action=_('create menu'))
         return serializer_invalid_response(serializer.errors)
 
+
 class SpecificMenu(APIView):
     @transaction.atomic
     @swagger_auto_schema(request_body=UpdateMenuSerializer) 
-    def put(self, request, slug):
+    def put(self, request, id):
         try:
-            menu = Menu.objects.get(slug=slug)
+            menu = Menu.objects.get(id=id)
         except Menu.DoesNotExist:
             return Response({"error":[_("The menu was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         serializer = UpdateMenuSerializer(menu, data=request.data, partial=True)
@@ -48,9 +49,9 @@ class SpecificMenu(APIView):
                 return unknown_exception_response(action=_('update menu'))
         return serializer_invalid_response(serializer.errors)
     @transaction.atomic
-    def delete(self, request, slug):
+    def delete(self, request, id):
         try:
-            menu = Menu.objects.get(slug=slug)
+            menu = Menu.objects.get(id=id)
         except Menu.DoesNotExist:
             return Response({"error":[_("The menu was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         try:
@@ -65,11 +66,6 @@ class SpecificMenu(APIView):
 
 
 class SubMenuView(APIView):
-    @swagger_auto_schema(method='get', responses={200: SubMenuSerializer(many=True)}) 
-    @action(detail=False, methods=['get'])
-    def get(self, request):
-        submenus = SubMenu.objects.all()  
-        return Response(SubMenuSerializer(submenus, many=True).data)
     @swagger_auto_schema(request_body=SubMenuSerializer) 
     @transaction.atomic
     def post(self, request):
@@ -77,18 +73,24 @@ class SubMenuView(APIView):
         if serializer.is_valid():
             try:
                 serializer.save()
-                return Response(_('The submenu was created.'))
+                return Response(serializer.data)
             except Exception:
                 transaction.rollback()
                 return unknown_exception_response(action=_('create submenu'))
         return serializer_invalid_response(serializer.errors)
 
 class SpecificSubMenu(APIView):
+    @swagger_auto_schema(method='get', responses={200: SubMenuSerializer(many=True)}) 
+    @action(detail=False, methods=['get'])
+    def get(self, request, id):
+        submenus = SubMenu.objects.filter(menu_id=id)
+        return Response(SubMenuSerializer(submenus, many=True).data)
+
     @transaction.atomic
     @swagger_auto_schema(request_body=UpdateSubMenuSerializer) 
-    def put(self, request, submenu_id):
+    def put(self, request, id):
         try:
-            submenu = SubMenu.objects.get(slug=submenu_id.split('*')[1], menu__slug=submenu_id.split('*')[0])
+            submenu = SubMenu.objects.get(id=id)
         except SubMenu.DoesNotExist:
             return Response({"error":[_("The submenu was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         serializer = UpdateSubMenuSerializer(submenu, data=request.data, partial=True)
@@ -100,10 +102,11 @@ class SpecificSubMenu(APIView):
                 transaction.rollback()
                 return unknown_exception_response(action=_('update submenu'))
         return serializer_invalid_response(serializer.errors)
+
     @transaction.atomic
-    def delete(self, request, submenu_id):
+    def delete(self, request, id):
         try:
-            submenu = SubMenu.objects.get(slug=submenu_id)
+            submenu = SubMenu.objects.get(id=id)
         except SubMenu.DoesNotExist:
             return Response({"error":[_("The submenu was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         try:
@@ -119,11 +122,6 @@ class SpecificSubMenu(APIView):
 class PageView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
-    @swagger_auto_schema(method='get', responses={200: PageSerializer(many=True)}) 
-    @action(detail=False, methods=['get'])
-    def get(self, request):
-        pages = Page.objects.all()  
-        return Response(PageSerializer(pages, many=True).data)
     @swagger_auto_schema(request_body=PageSerializer) 
     @transaction.atomic
     def post(self, request, format=None):
@@ -131,7 +129,7 @@ class PageView(APIView):
         if serializer.is_valid():
             try:
                 serializer.save()
-                return Response(_('The page was created.'))
+                return Response(serializer.data)
             except Exception:
                 transaction.rollback()
                 return unknown_exception_response(action=_('create page'))
@@ -140,11 +138,17 @@ class PageView(APIView):
 class SpecificPage(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
+    @swagger_auto_schema(method='get', responses={200: PageSerializer(many=True)}) 
+    @action(detail=False, methods=['get'])
+    def get(self, request, id):
+        pages = Page.objects.filter(submenu_id=id)  
+        return Response(PageSerializer(pages, many=True).data)
+
     @transaction.atomic
     @swagger_auto_schema(request_body=UpdatePageSerializer) 
-    def put(self, request, page_id):
+    def put(self, request, id):
         try:
-            page = Page.objects.get(page_id=page_id)
+            page = Page.objects.get(id=id)
         except Page.DoesNotExist:
             return Response({"error":[_("The page was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         serializer = UpdatePageSerializer(page, data=request.data, partial=True)
@@ -157,9 +161,9 @@ class SpecificPage(APIView):
                 return unknown_exception_response(action=_('update page'))
         return serializer_invalid_response(serializer.errors)
     @transaction.atomic
-    def delete(self, request, page_id):
+    def delete(self, request, id):
         try:
-            page = Page.objects.get(page_id=page_id)
+            page = Page.objects.get(id=id)
         except Page.DoesNotExist:
             return Response({"error":[_("The page was not found.")]}, status=status.HTTP_404_NOT_FOUND)
         try:

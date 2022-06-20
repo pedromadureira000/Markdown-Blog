@@ -39,7 +39,7 @@ export const ErrorHandler = (error: any, commit: Commit, dispatch: Dispatch, i18
   // User
   let common_user_fields = ['username', 'email', 'password']
   // Core
-  let core_fields = ['slug', 'default_submenu', 'title', 'icon', 'submenu_id', 'menu', 'page_id', 'submenu', 'description', 'image',
+  let core_fields = ['slug', 'default_submenu', 'title', 'icon', 'menu', 'submenu', 'description', 'image',
     'markdown_text']
   // field_list
   let field_list = common_user_fields.concat(core_fields)

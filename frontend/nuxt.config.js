@@ -65,18 +65,30 @@ export default {
     // If a custom path is missing for one of the locales, the defaultLocale custom path is used, if set.
     pages: {
       about: {
-        en: 'about',
+        en: '/about',
         'pt-BR': '/sobre',
       },
       myaccount: {
         en: '/my-account',
         'pt-BR': '/minha-conta',
       },
-      // Organization
-      // 'admin/organization': {
-        // en: '/admin/organization',
-        // 'pt-BR': '/admin/organizacao',
-      // },
+      // Admin
+      admin: {
+        en: '/admin',
+        'pt-BR': '/admin',
+      },
+      'admin/menu': {
+        en: '/admin/menu',
+        'pt-BR': '/admin/menu',
+      },
+      'admin/submenu': {
+        en: '/admin/submenu',
+        'pt-BR': '/admin/submenu',
+      },
+      'admin/page': {
+        en: '/admin/page',
+        'pt-BR': '/admin/pagina',
+      },
     },
     vueI18n: {
       fallbackLocale: 'pt-BR',

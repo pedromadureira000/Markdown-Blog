@@ -30,7 +30,9 @@ export const messages = {
     An_error_occurred: 'An error occurred',
     Home_Page: 'Home Page',
     Welcome: 'Bem-vindo',
-    //--------------------------
+    //--------------Commons
+    Fetching_data: 'Fetching data ...',
+    Error_fetching_data: 'Error fetching data.',
     Are_you_sure_you_want_to_delete: 'Confirm the deletion of this record?',
     Save: 'Salvar',
     Cancel: 'Cancelar',
@@ -42,6 +44,9 @@ export const messages = {
     Logout: 'Logout',
     Update_profile: "Update profile",
     Change_Password: 'Change Password',
+    Actions: "Actions",
+    Empty: "Empty",
+    SlugFieldErrorMessage: 'It must containing only letters, numbers, underscores or hyphens.',
     // My_Account
     Update_Account_Information: 'Update Account Information',
     After_change_your_password_you_will_be_logged_out: 'After change your password you will be logged out.',
@@ -51,8 +56,15 @@ export const messages = {
     "Must be valid e-mail" : "Must be valid e-mail",
     Password_must_be_different_from_current_password: 'The password should not be equal to the current password.',
     password_confirm_does_not_match: 'The password confirmation fail.',
-
-
+    // Admin
+    Menu: "Menu",
+    "Sub-menu": "Sub-menu",
+    Page: "Page",
+    "Create Menu": "Create Menu",
+    "Edit Menu": "Edit Menu",
+    "Default Sub-menu": "Default Sub-menu",
+    "Title": "Title",
+    "Icon": "Icon",
 
 
   },
@@ -91,7 +103,9 @@ export const messages = {
     An_error_occurred: 'Ocorreu um erro.',
     Home_Page: 'Ir para a Home',
     Welcome: 'Welcome',
-    //--------------------------
+    //--------------Commons
+    Fetching_data: 'Carregando dados ...',
+    Error_fetching_data: 'Erro ao carregar dados.',
     Are_you_sure_you_want_to_delete: 'Confirma a exclusão desse registro?',
     Save: 'Save',
     Cancel: 'Cancel',
@@ -103,6 +117,9 @@ export const messages = {
     Logout: 'Sair',
     Update_profile: 'Atualizar Perfil',
     Change_Password: 'Alterar Senha',
+    Actions: "Ações",
+    Empty: "Vazio",
+    SlugFieldErrorMessage: 'Esse campo deve conter apenas, números, underscores ou hifens.',
     // My_Account
     Update_Account_Information: 'Atualizar Perfil',
     After_change_your_password_you_will_be_logged_out: 'Após mudar sua senha você será deslogado.',
@@ -112,6 +129,41 @@ export const messages = {
     "Must be valid e-mail" : "O e-mail deve ter um formato valido.",
     Password_must_be_different_from_current_password: 'A senha deve ser diferente da senha atual.',
     password_confirm_does_not_match: 'As senhas não coincidem.',
+    //---------- PAGE:  Admin
+    Menu: "Menu",
+    "Sub-menu": "Sub-menu",
+    Page: "Página",
+    "Create Menu": "Criar Menu",
+    "Edit Menu": "Editar Menu",
+    "Default Sub-menu": "Sub-menu padrão",
+    "Title": "Título",
+    "Icon": "Ícone",
+    // ---------------------- API messages <<<<<<<<<<<<<<<<<<,,
+    // API messages: menu  
+    createMenu_success_msg: "Menu criado com sucesso.",
+    createMenu_error_msg: "Algo deu errado ao tentar criar um menu.",
+    fetchMenus_error_msg: "Algo deu errado ao buscar os menus.",
+    updateMenu_success_msg: "Menu atualizado com sucesso.",
+    updateMenu_error_msg: "Algo deu errado ao tentar atualizar o menu.",
+    deleteMenu_success_msg: "Menu excluído com sucesso.",
+    deleteMenu_error_msg:  "Algo deu errado ao tentar excluir o menu.",
+    fetchSubmenus_error_msg: "Algo deu errado ao tentar buscar sub-menus.",
+    // API messages: menu
+    createSubmenu_success_msg: "Sub-menu criado com sucesso.",
+    createSubmenu_error_msg: "Algo deu errado ao tentar criar um sub-menu.",
+    updateSubmenu_success_msg: "Sub-menu atualizado com sucesso.",
+    updateSubmenu_error_msg: "Algo deu errado ao tentar atualizar o sub-menu.",
+    deleteSubmenu_success_msg: "Sub-menu excluído com sucesso.",
+    deleteSubmenu_error_msg:  "Algo deu errado ao tentar excluir o sub-menu.",
+    // API messages: page
+    createPage_success_msg: "Página criada com sucesso.",
+    createPage_error_msg: "Algo deu errado ao tentar criar uma página.",
+    updatePage_success_msg: "Página atualizada com sucesso.",
+    updatePage_error_msg: "Algo deu errado ao tentar atualizar a página.",
+    deletePage_success_msg: "Página excluída com sucesso.",
+    deletePage_error_msg:  "Algo deu errado ao tentar excluir a página.",
+    // ---------------------- Submenu page
+    "Create Sub-menu": "Criar Sub-menu",
 
   },
 }
