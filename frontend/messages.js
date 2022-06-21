@@ -65,6 +65,9 @@ export const messages = {
     "Default Sub-menu": "Default Sub-menu",
     "Title": "Title",
     "Icon": "Icon",
+    "Admin": "Admin",
+    "Sub-Menu": "Sub-Menu",
+    "Submit": "Submit",
 
 
   },
@@ -138,6 +141,9 @@ export const messages = {
     "Default Sub-menu": "Sub-menu padrão",
     "Title": "Título",
     "Icon": "Ícone",
+    "Admin": "Admin",
+    "Sub-Menu": "Sub-Menu",
+    "Submit": "Enviar",
     // ---------------------- API messages <<<<<<<<<<<<<<<<<<,,
     // API messages: menu  
     createMenu_success_msg: "Menu criado com sucesso.",
@@ -156,6 +162,7 @@ export const messages = {
     deleteSubmenu_success_msg: "Sub-menu excluído com sucesso.",
     deleteSubmenu_error_msg:  "Algo deu errado ao tentar excluir o sub-menu.",
     // API messages: page
+    fetchPages_error_msg: "Algo deu errado ao buscar as páginas.",
     createPage_success_msg: "Página criada com sucesso.",
     createPage_error_msg: "Algo deu errado ao tentar criar uma página.",
     updatePage_success_msg: "Página atualizada com sucesso.",
@@ -164,6 +171,14 @@ export const messages = {
     deletePage_error_msg:  "Algo deu errado ao tentar excluir a página.",
     // ---------------------- Submenu page
     "Create Sub-menu": "Criar Sub-menu",
+    "Edit Sub-menu": "Editar Sub-menu",
+    "Edit": "Editar",
+    // ----------------------  Page page
+    "Create Page": "Criar página",
+    "Description": "Descrição",
+    "Image": "Imagem",
+    "Edit Page": "Editar Página",
+    "Markdown Text": "Texto Markdown",
 
   },
 }

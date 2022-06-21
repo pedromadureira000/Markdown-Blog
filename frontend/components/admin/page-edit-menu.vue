@@ -20,10 +20,10 @@
                 >
                   <v-select
                     disabled
-                    :value="menu"
-                    label="Menu"
-                    :items="[menu]"
-                    :item-text="(x) =>  x.title"
+                    :value="submenu"
+                    label="Sub-menu"
+                    :items="[submenu]"
+                    :item-text="(x) => x.title + ' (' + x.slug + ')'"
                   ></v-select>
                 </v-col>
               </v-row>
@@ -43,13 +43,44 @@
                 required
                 @blur="$v.title.$touch()"
               />
-              <!-- Icon -->
-              <v-text-field
-                :label="$t('Icon')"
-                v-model.trim="icon"
-                :error-messages="iconErrors"
-                required
-                @blur="$v.icon.$touch()"
+              <!-- Description -->
+              <v-textarea
+                outlined
+                :label="$t('Description')"
+                v-model.trim="description"
+                :error-messages="descriptionErrors"
+                @blur="$v.description.$touch()"
+                class="mb-3"
+              />
+              <!-- Image -->
+              <v-row>
+                <v-col>
+                  <v-file-input
+                    show-size
+                    accept="image/*"
+                    :label="$t('Image')"
+                    prepend-icon="mdi-camera"
+                    @change="onImageChange"
+                  ></v-file-input>
+                </v-col>
+                <v-col>
+                  <v-img
+                    v-if="img_url"
+                    contain
+                    width="115px"
+                    height="87px"
+                    :src="img_url"
+                  ></v-img>
+                </v-col>
+              </v-row>
+              <!-- Markdown Text -->
+              <v-textarea
+                outlined
+                :label="$t('Markdown Text')"
+                v-model.trim="markdown_text"
+                :error-messages="markdownTextErrors"
+                @blur="$v.markdown_text.$touch()"
+                class="mb-3"
               />
           </v-container>
         </v-card-text>
@@ -60,7 +91,7 @@
           <v-btn 
             class="blue--text darken-1" 
             text 
-            @click="updateSubmenu()"
+            @click="updatePage()"
             :loading="loading"
             :disabled="loading"
           >{{$t('Save')}}</v-btn>
@@ -70,7 +101,7 @@
 
     <!-- Delete Confirmation Dialog -->
     <delete-confirmation-dialog 
-      @delete-item="deleteSubmenu" 
+      @delete-item="deletePage" 
       @cancel="show_delete_confirmation_dialog = false" 
       :show_delete_confirmation_dialog="show_delete_confirmation_dialog"
     />
@@ -92,15 +123,20 @@ export default {
     "dots-menu": require("@/components/dots-menu.vue").default,
     "delete-confirmation-dialog": require("@/components/delete-confirmation-dialog.vue").default,
   },
-  props: ['submenu', 'menus'],
+  props: ['page', 'submenus'],
   data() {
     return {
       show_edit_dialog: false,
       show_delete_confirmation_dialog: false,
-      menu: null,
+      // Fields
+      submenu: null,
       slug: null,
       title: null,
-      icon: null,
+      description: null,
+      image: null,
+      markdown_text: "",
+      img_url: "",
+      //
       loading: false,
       menu_items: [
         { 
@@ -131,14 +167,18 @@ export default {
       required,
       maxLength: maxLength(30),
     },
-    icon: {
+    description: {
       required,
-      maxLength: maxLength(50),
+      maxLength: maxLength(200),
     },
-    subMenuInfoGroup: [
+    markdown_text: {
+      required,
+    },
+    pageInfoGroup: [
       "slug",
       "title",
-      "icon",
+      "description",
+      "markdown_text",
     ],  
   },
 
@@ -158,11 +198,17 @@ export default {
       !this.$v.title.maxLength && errors.push(this.$formatStr(this.$t("This_field_must_have_up_to_X_characters"), 30));
       return errors;
     },
-    iconErrors() {
+    descriptionErrors() {
       const errors = [];
-      if (!this.$v.icon.$dirty) return errors;
-      !this.$v.icon.required && errors.push(this.$t("This_field_is_required"));
-      !this.$v.icon.maxLength && errors.push(this.$formatStr(this.$t("This_field_must_have_up_to_X_characters"), 50));
+      if (!this.$v.description.$dirty) return errors;
+      !this.$v.description.required && errors.push(this.$t("This_field_is_required"));
+      !this.$v.description.maxLength && errors.push(this.$formatStr(this.$t("This_field_must_have_up_to_X_characters"), 200));
+      return errors;
+    },
+    markdownTextErrors() {
+      const errors = [];
+      if (!this.$v.markdown_text.$dirty) return errors;
+      !this.$v.markdown_text.required && errors.push(this.$t("This_field_is_required"));
       return errors;
     },
   },
@@ -174,44 +220,78 @@ export default {
       this.menu_items[index].click.call(this) // will call the function but the function will use the vue instance 'this' context.
     },
 
-    async updateSubmenu(){
-      this.$v.subMenuInfoGroup.$touch();
-      if (this.$v.subMenuInfoGroup.$invalid) {
+    async updatePage(){
+      this.$v.pageInfoGroup.$touch();
+      if (this.$v.pageInfoGroup.$invalid) {
         this.$store.dispatch("setAlert", { message: this.$t("Please_fill_the_form_correctly"), alertType: "error" }, { root: true })
       } else {
         this.loading = true;
-        let data = await this.$store.dispatch("admin/updateSubmenu", {
-          id: this.submenu.id,
-          slug: this.slug,
-          title: this.title,
-          icon: this.icon,
-        })
+        const formData = new FormData()
+        formData.append('id', this.page.id)
+        formData.append('slug', this.slug)
+        formData.append('title', this.title)
+        formData.append('description', this.description)
+        formData.append('markdown_text', this.markdown_text)
+        if (this.image){
+          formData.append('image', this.image, this.image.name)
+        }
+        let data = await this.$store.dispatch("admin/updatePage", formData)
         this.loading = false;
-        if (data === 'ok'){
-          // Reactivity for submenu list inside submenu.vue 
-          this.submenu.slug = this.slug
-          this.submenu.title = this.title
-          this.submenu.icon = this.icon
+        if (data){
+          // Reactivity for page list inside page.vue 
+          this.page.slug = this.slug
+          this.page.title = this.title
+          this.page.description = this.description
+          this.page.markdown_text = this.markdown_text
+          this.page.image = this.getImageUrl(data.image) 
             // Close dialog
           this.show_edit_dialog = false
         }
       }
     },
 
-    async deleteSubmenu(){
-      let data = await this.$store.dispatch('admin/deleteSubmenu', this.submenu.id)
+    async deletePage(){
+      let data = await this.$store.dispatch('admin/deletePage', this.page.id)
       if (data === "ok"){
-        this.$emit('submenu-deleted')
+        this.$emit('page-deleted')
       }
     },
     
+    // Image
+    onImageChange (event) {
+      this.image = event
+      if (event === null){
+        this.img_url = ''
+      } else{
+        this.img_url = URL.createObjectURL(this.image)
+      }
+    },
+
+    // The backend return item url with base url "http://..." after create an item
+    getImageUrl(image){
+      if (image) {
+        let url = image
+        if (url.startsWith('http')){
+          let url_fixed = url.split('/media/images/')[1]
+          return this.$store.state.CDNBaseUrl + '/media/images/' + url_fixed
+        }
+        else {
+          return this.$store.state.CDNBaseUrl + url
+        }
+      }
+      else {
+        return this.$store.state.CDNBaseUrl + '/media/images/page/defaultimage.jpeg'
+      }
+    },
   },
 
   mounted() {
-    this.menu = this.menus.find(el=> el.id === this.submenu.menu) 
-    this.slug = this.submenu.slug
-    this.title = this.submenu.title
-    this.icon = this.submenu.icon
+    this.submenu = this.submenus.find(el=> el.id === this.page.submenu) 
+    this.slug = this.page.slug
+    this.title = this.page.title
+    this.description = this.page.description
+    this.markdown_text = this.page.markdown_text
+    this.img_url = this.getImageUrl(this.page.image)
   }
 }
 </script>

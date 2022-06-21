@@ -22,7 +22,7 @@
                     v-model="default_submenu"
                     :label="$t('Default Sub-menu')"
                     :items="submenus"
-                    :item-text="(x) =>  x.slug ? x.title :  $t('Empty')"
+                    :item-text="(x) => x.slug ? x.title + ' (' + x.slug + ')' : $t('Empty')"
                     return-object
                   ></v-select>
                 </v-col>

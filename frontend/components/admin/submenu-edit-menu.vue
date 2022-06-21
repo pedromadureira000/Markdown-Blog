@@ -23,7 +23,7 @@
                     :value="menu"
                     label="Menu"
                     :items="[menu]"
-                    :item-text="(x) =>  x.title"
+                    :item-text="(x) => x.title + ' (' + x.slug + ')'"
                   ></v-select>
                 </v-col>
               </v-row>

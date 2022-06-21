@@ -1,17 +1,13 @@
 <template>
   <v-app>
 		<v-navigation-drawer v-model="drawer" app> 
-      <v-list two-line v-if="logged_user">
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-subtitle>Username: {{logged_user.username}}</v-list-item-subtitle>
-            <!-- <v-list-item-subtitle v-if="hasRoleOtherThenClientUser">{{$t('Role')}}: {{$t(logged_user.roles[0])}}</v-list-item-subtitle> -->
-            <!-- <v-list-item-subtitle v-if="currentUserIsClientUser">{{$t('Client')}}: {{logged_user.client.split('*')[2] + ' - ' + logged_user.client_name}}</v-list-item-subtitle> -->
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-
-			<v-divider style="margin-top: -8px; margin-bottom: 8px;" />
+      <!-- Test Button -->
+      <v-card class="pa-3" color="blue-grey darken-4" tile>
+        <nuxt-link :to="switchLocalePath('en')">English</nuxt-link>
+        <nuxt-link :to="switchLocalePath('pt-BR')">Português</nuxt-link>
+        <div class="mb-3"><!-- just margin --></div> 
+        <!-- <v-btn label="testFF" @click="testFF"/> -->
+      </v-card>
 
       <!-- MenuItems composition -->
       <v-list nav dense>
@@ -29,14 +25,6 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
-
-      <!-- Test Button -->
-      <v-card class="pa-3" color="blue-grey darken-4" tile>
-        <nuxt-link :to="switchLocalePath('en')">English</nuxt-link>
-        <nuxt-link :to="switchLocalePath('pt-BR')">Português</nuxt-link>
-        <!-- <nuxt-link :to="localePath('admin-organization-company')">TEST</nuxt-link> -->
-        <!-- <v-btn label="testFF" @click="testFF"/> -->
-      </v-card>
 
     </v-navigation-drawer>
     <!-- App bar -->

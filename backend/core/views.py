@@ -155,7 +155,7 @@ class SpecificPage(APIView):
         if serializer.is_valid():
             try:
                 serializer.save()
-                return Response(_("The page was updated."))
+                return Response(serializer.data)
             except Exception:
                 transaction.rollback()
                 return unknown_exception_response(action=_('update page'))

@@ -7,7 +7,7 @@ class MenuSerializer(serializers.ModelSerializer):
     class SubMenuAUXSerializer(serializers.ModelSerializer):
         class Meta:
             model = SubMenu
-            fields =  ['id', 'title']
+            fields = ['id', 'title', 'slug']
 
     default_submenu = SubMenuAUXSerializer(read_only=True)
     class Meta:

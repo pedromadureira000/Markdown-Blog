@@ -177,7 +177,7 @@ export default {
 	async updatePage(payload){
 		return await axios({ 
 		method: "put",
-		url: `/api/core/page/${payload.id}`,
+		url: `/api/core/page/${payload.get('id')}`,
 		data: payload}).then((request) => {
 					return request.data 
 				})

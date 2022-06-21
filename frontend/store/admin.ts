@@ -124,9 +124,9 @@ export const actions: ActionTree<AdminState, RootState> = {
 
   async updatePage({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, payload: any){
     try {
-    await api.updatePage(payload)
+    let data = await api.updatePage(payload)
     dispatch("setAlert", {message: this.app.i18n.t('updatePage_success_msg'), alertType: "success"}, { root: true })
-    return "ok"
+    return data
     }
     catch(error){
       ErrorHandler(error, commit, dispatch, this.app.i18n, this.app.i18n.t("updatePage_error_msg"))

@@ -21,7 +21,7 @@
                     v-model="menu"
                     label="Menu"
                     :items="menus"
-                    :item-text="(x) =>  x.title"
+                    :item-text="(x) => x.title + ' (' + x.slug + ')'"
                     return-object
                   ></v-select>
                 </v-col>
@@ -72,7 +72,7 @@
                 v-model="menu_filter"
                 label="Menu"
                 :items="menus"
-                :item-text="(x) => x.title"
+                :item-text="(x) => x.title + ' (' + x.slug + ')'"
                 return-object
                 @change="fetchSubmenus"
               ></v-select>
@@ -86,6 +86,7 @@
         :items-per-page="10"
         item-key="id"
         class="elevation-1 mt-3"
+        loading="loading_submenus"
       >
         <template v-slot:item.actions="{ item }">
           <submenu-edit-menu :submenu="item" :menus="menus" @submenu-deleted="deleteSubmenu(item)" />
