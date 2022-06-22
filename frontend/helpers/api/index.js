@@ -75,7 +75,7 @@ export default {
 	async fetchMenus(){
 		return await axios({ 
 		method: "get",
-		url: "/api/core/menu",
+		url: "/api/core/get_menus",
 			}).then((request) => {
 					return request.data 
 				})
@@ -125,7 +125,7 @@ export default {
 	async fetchSubmenus(menu_id){
 		return await axios({ 
 		method: "get",
-		url: `/api/core/submenu/${menu_id}`,
+		url: `/api/core/submenus/${menu_id}`,
 			}).then((request) => {
 					return request.data 
 				})
@@ -165,10 +165,10 @@ export default {
 				})
 	},
 
-	async fetchPages(menu_id){
+	async fetchPages(submenu_id){
 		return await axios({ 
 		method: "get",
-		url: `/api/core/page/${menu_id}`,
+		url: `/api/core/page/${submenu_id}`,
 			}).then((request) => {
 					return request.data 
 				})
@@ -192,4 +192,32 @@ export default {
 				})
 	},
 
+  //---------------------------------------------------  Blog APIs
+
+	async fetchSubmenusToBuildBlog(menu_slug){
+		return await axios({ 
+		method: "get",
+		url: `/api/core/fetch_submenus_to_build_blog/${menu_slug}`,
+			}).then((request) => {
+					return request.data 
+				})
+	}, 
+
+	async fetchPagesToBuildBlog(payload){
+		return await axios({ 
+		method: "get",
+		url: `/api/core/fetch_pages_to_build_blog/${payload.menu_slug}/${payload.submenu_slug}`,
+			}).then((request) => {
+					return request.data 
+				})
+	},
+
+	async fetchPageToBuildBlog(payload){
+		return await axios({ 
+		method: "get",
+		url: `/api/core/fetch_page_to_build_blog/${payload.menu_slug}/${payload.submenu_slug}/${payload.page_slug}`,
+			}).then((request) => {
+					return request.data 
+				})
+	},
 }

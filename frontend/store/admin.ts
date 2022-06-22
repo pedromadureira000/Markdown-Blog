@@ -112,9 +112,9 @@ export const actions: ActionTree<AdminState, RootState> = {
     }
   },
 
-	async fetchPages({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, menu_id: string){
+	async fetchPages({commit, dispatch}: {commit: Commit, dispatch: Dispatch}, submenu_id: string){
     try {
-		let pages = await api.fetchPages(menu_id)
+		let pages = await api.fetchPages(submenu_id)
 		return pages
     }
 		catch(error){

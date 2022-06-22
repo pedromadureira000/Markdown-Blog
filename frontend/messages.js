@@ -169,6 +169,10 @@ export const messages = {
     updatePage_error_msg: "Algo deu errado ao tentar atualizar a página.",
     deletePage_success_msg: "Página excluída com sucesso.",
     deletePage_error_msg:  "Algo deu errado ao tentar excluir a página.",
+    // API blog
+    fetchPage_error_msg: "Algo deu errado ao tentar carregar a página.",
+    fetchMenusAndSubmenus_error_msg: "Algo deu errado ao tentar buscar menus e sub-menus.",
+
     // ---------------------- Submenu page
     "Create Sub-menu": "Criar Sub-menu",
     "Edit Sub-menu": "Editar Sub-menu",

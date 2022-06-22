@@ -1,7 +1,7 @@
 import colors from 'vuetify/es5/util/colors'
 import {messages} from './messages'
-
 const _isdev = process.env.DEV
+const axios = require("axios");
 
 export default {
 
@@ -142,4 +142,25 @@ export default {
     phone_number: process.env.PHONE_NUMBER,
     company_name: process.env.COMPANY_NAME
   },	
+
+  generate: {
+    exclude: [
+      /^\/admin/ // path starts with /admin
+    ],
+    // generate routes with dynamic params
+    // routes: function() {
+      // return axios
+        // .get(process.env.BASE_URL + "/api/core/get_menus_submenus_and_pages")
+        // .then(res => {
+          // const routes = [];
+          // for (const key in res.data) {
+            // routes.push({
+              // route: "/posts/" + key,
+              // payload: {postData: res.data[key]}
+            // });
+          // }
+          // return routes;
+        // });
+    // }
+  }
 }
