@@ -31,19 +31,6 @@ export default {
 				.then(() => {})
 		},
 
-	// async updateCurrentUserProfile(payload){
-		// return await axios({ 
-		// method: "put",
-		// url: "/api/user/own_profile",
-		// data:{
-			// username: payload.username,
-			// email: payload.email,
-		// }
-			// }).then((request) => {
-					// return request.data 
-				// })
-	// },
-
   async updateOwnPassword(payload){
     return await axios({ 
     method: "put",

@@ -7,7 +7,7 @@ export interface RootState {
   },
   connectionError: boolean,
   CDNBaseUrl: string,
-  test: any
+  // test: any
 }
 
 export const state = (): RootState => ({
@@ -20,7 +20,7 @@ export const state = (): RootState => ({
   connectionError: false,
   // @ts-ignore
   CDNBaseUrl: process.env.DEV ? 'http://localhost:8000' : process.env.CDN_URL,
-  test: null,
+  // test: null,
 });
 
 import { MutationTree } from "vuex";
@@ -45,9 +45,9 @@ export const mutations: MutationTree<RootState> = {
     state.connectionError = value
   },
 
-  testMutation(state, value: any){
-    state.test = value
-  }
+  // testMutation(state, value: any){
+    // state.test = value
+  // }
 
 };
 
@@ -103,8 +103,8 @@ export const actions: ActionTree<RootState, RootState> = {
     // }
   // }
 
-  async nuxtServerInit({ dispatch, commit }) {
-    let menus = await dispatch('admin/fetchMenus')
-    commit('testMutation', menus)
-  }
+  // async nuxtServerInit({ dispatch, commit }) {
+    // let menus = await dispatch('admin/fetchMenus')
+    // commit('testMutation', menus)
+  // }
 };

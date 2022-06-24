@@ -13,7 +13,6 @@ export default {
         page: context.payload.page
       }
     }
-    console.log(">>>>>>> context.params", context.params)
     return context.store.dispatch("blog/fetchPageToBuildBlog", {menu_slug: context.params.menu, submenu_slug: context.params.submenu,
       page_slug: context.params.page})
   },

@@ -119,10 +119,11 @@ WSGI_APPLICATION = 'settings.wsgi.application'
 # Debug tool bar
 if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE.insert(1, "debug_toolbar.middleware.DebugToolbarMiddleware")
-    DEBUG_TOOLBAR_CONFIG = {
-        "SHOW_TOOLBAR_CALLBACK": lambda request: True,
-    }
+    MIDDLEWARE.insert(0, "debug_toolbar.middleware.DebugToolbarMiddleware")
+    # XXX: The line bellow cause pytest to throw the following error (Django.urls.exceptions.NoReverseMatch: 'djdt' is not a registered namespace)
+    #  DEBUG_TOOLBAR_CONFIG = {   
+        #  "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+    #  }
     import socket 
     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
     INTERNAL_IPS = [ip[:-1] + '1' for ip in ips] + ['127.0.0.1', '10.0.2.2']
@@ -176,13 +177,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_COOKIE_NAME = 'lang'
 
-LANGUAGE_CODE = 'pt-BR'
+LANGUAGE_CODE = 'en'
+#  LANGUAGE_CODE = 'pt-BR'
 
 TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
-USE_L10N = True
+#  USE_L10N = True (RemovedInDjango50Warning: The USE_L10N setting is deprecated. Starting with Django 5.0, localized formatting of data will always be enabled. For example Django will display numbers and dates using the format of the current locale.)
 
 USE_TZ = True
 

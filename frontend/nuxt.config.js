@@ -148,19 +148,23 @@ export default {
       /^\/admin/ // path starts with /admin
     ],
     // generate routes with dynamic params
-    // routes: function() {
-      // return axios
-        // .get(process.env.BASE_URL + "/api/core/get_menus_submenus_and_pages")
-        // .then(res => {
-          // const routes = [];
-          // for (const key in res.data) {
-            // routes.push({
-              // route: "/posts/" + key,
-              // payload: {postData: res.data[key]}
-            // });
-          // }
-          // return routes;
-        // });
-    // }
+    routes: function() {
+      return axios
+        .get(process.env.BASE_URL + "/api/core/get_menus_submenus_and_pages")
+        .then(res => {
+          let menu_routes = res.data.map(el => ({route: el.to, payload: {allSubmenuItems: el.submenus}}))
+          let submenu_routes = []
+          for (const key in res.data) {
+            let value = res.data[key]
+            submenu_routes.concat(value.submenus.map(el=>({route: el.to, payload: {allPagesItems: el.pages}})))
+          }
+          let page_routes = []
+          for (const key in submenu_routes) {
+            let value = submenu_routes[key]
+            page_routes.concat(value['payload'].allPagesItems.map(el=>({route: el.to, payload: {page: el}})))
+          }
+          return menu_routes.concat(submenu_routes, page_routes)
+        });
+    }
   }
 }

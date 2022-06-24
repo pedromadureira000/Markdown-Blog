@@ -115,6 +115,14 @@ export default {
     /** return {menuItems: menus} */
   /** }, */
 
+  async fetch() {
+    // Fetch Submenus
+    let menus = await this.$store.dispatch("admin/fetchMenus");
+    if (menus) {
+      this.menuItems = menus
+    }
+  },
+
   data() {
     return {
       currentMenuItems: [],
@@ -185,8 +193,8 @@ export default {
   },
 
   mounted() {
-    console.log(">>>>>>> this.$store.state.test", this.$store.state.test)
-    this.menuItems = this.$store.state.test
+    /** console.log(">>>>>>> this.$store.state.test", this.$store.state.test) */
+    /** this.menuItems = this.$store.state.menuItems */
     this.currentMenuItems = this.getCurrentMenuItems()
   }
 
