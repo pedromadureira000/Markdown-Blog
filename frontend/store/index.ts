@@ -8,6 +8,7 @@ export interface RootState {
   connectionError: boolean,
   CDNBaseUrl: string,
   // test: any
+  menus: any,
 }
 
 export const state = (): RootState => ({
@@ -21,6 +22,7 @@ export const state = (): RootState => ({
   // @ts-ignore
   CDNBaseUrl: process.env.DEV ? 'http://localhost:8000' : process.env.CDN_URL,
   // test: null,
+  menus: [],
 });
 
 import { MutationTree } from "vuex";
@@ -48,6 +50,10 @@ export const mutations: MutationTree<RootState> = {
   // testMutation(state, value: any){
     // state.test = value
   // }
+  setMenus(state, value: any){
+    state.menus = value
+  }
+  
 
 };
 
@@ -94,6 +100,10 @@ export const actions: ActionTree<RootState, RootState> = {
 		}
 	},
 
+  async setMenus({ commit, dispatch}: { commit: Commit, dispatch: Dispatch}, payload: any){
+    commit("setMenus", payload)
+  },
+
   // async testFF({commit, dispatch}: {commit: Commit, dispatch: Dispatch}){
     // try {
       // await api.testFF()
@@ -103,8 +113,4 @@ export const actions: ActionTree<RootState, RootState> = {
     // }
   // }
 
-  // async nuxtServerInit({ dispatch, commit }) {
-    // let menus = await dispatch('admin/fetchMenus')
-    // commit('testMutation', menus)
-  // }
 };

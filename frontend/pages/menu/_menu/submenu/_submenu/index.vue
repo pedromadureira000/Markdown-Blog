@@ -24,6 +24,9 @@
 <script>
  
 export default {
+  nuxtI18n: {
+    locales: ['pt-BR']
+  },
   asyncData(context) {
     if (context.payload) {
       return {

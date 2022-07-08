@@ -20,8 +20,6 @@ pillow = "*"
 [dev-packages]
 pytest = "*"
 pytest-django = "*"
-pytest-mock = "*"
-pytest-cov = "*"
 model-bakery = "*"
 # faker = "*"
 ipython = "*"

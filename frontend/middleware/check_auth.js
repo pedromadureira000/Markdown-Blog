@@ -1,6 +1,7 @@
 import api from '~api'
 
 export default async (ctx) => {
+  if (!ctx.req){return;} // XXX This is to run 'nuxt generate'
 		// A middleware can be asynchronous. To do this return a  Promise or use async/await.
 	if (process.server && ctx.req.headers.cookie){
 		let csrftoken = ctx.req.headers.cookie

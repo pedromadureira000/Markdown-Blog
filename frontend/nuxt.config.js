@@ -4,6 +4,7 @@ const _isdev = process.env.DEV
 const axios = require("axios");
 
 export default {
+  target: 'static',
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
@@ -72,7 +73,6 @@ export default {
         en: '/my-account',
         'pt-BR': '/minha-conta',
       },
-      // Admin
       admin: {
         en: '/admin',
         'pt-BR': '/admin',
@@ -89,6 +89,22 @@ export default {
         en: '/admin/page',
         'pt-BR': '/admin/pagina',
       },
+      // 'menu': {
+        // en: 'menu',
+        // 'pt-BR': 'menu',
+      // },
+      // 'menu/:menu': {
+        // en: 'menu/:menu',
+        // 'pt-BR': 'menu/:menu',
+      // },
+      // 'menu/:menu/submenu/:submenu': {
+        // en: 'menu/:menu/submenu/:submenu',
+        // 'pt-BR': 'menu/:menu/submenu/:submenu',
+      // },
+      // 'menu/:menu/submenu/:submenu/:page': {
+        // en: 'menu/:menu/submenu/:submenu/:page',
+        // 'pt-BR': 'menu/:menu/submenu/:submenu/:page',
+      // },
     },
     vueI18n: {
       fallbackLocale: 'pt-BR',
@@ -140,7 +156,7 @@ export default {
   publicRuntimeConfig: {
     email: process.env.EMAIL,
     phone_number: process.env.PHONE_NUMBER,
-    company_name: process.env.COMPANY_NAME
+    company_name: process.env.COMPANY_NAME,
   },	
 
   generate: {
@@ -150,20 +166,46 @@ export default {
     // generate routes with dynamic params
     routes: function() {
       return axios
-        .get(process.env.BASE_URL + "/api/core/get_menus_submenus_and_pages")
+        .get(process.env.GENERATE_PROXY_URL + "/api/core/get_menus_submenus_and_pages")
         .then(res => {
-          let menu_routes = res.data.map(el => ({route: el.to, payload: {allSubmenuItems: el.submenus}}))
+
+          let menus_only = []
           let submenu_routes = []
-          for (const key in res.data) {
-            let value = res.data[key]
-            submenu_routes.concat(value.submenus.map(el=>({route: el.to, payload: {allPagesItems: el.pages}})))
-          }
           let page_routes = []
-          for (const key in submenu_routes) {
-            let value = submenu_routes[key]
-            page_routes.concat(value['payload'].allPagesItems.map(el=>({route: el.to, payload: {page: el}})))
-          }
-          return menu_routes.concat(submenu_routes, page_routes)
+
+          // let basic_routes = [  // TODO This is possible?
+            // {route: '/', payload: {menus: menus_only}},
+            // {route: '/en', payload: {menus: menus_only}},
+          // ]
+
+          res.data.forEach(menu => {
+            // menus_only
+            let menu_only = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu)
+            let menu_only__en = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu_only)
+            menu_only__en.to = '/en' + menu_only__en.to
+            menus_only.push(menu_only, menu_only__en)
+            //-------/ submenu
+            submenu_routes
+            menu.submenus.forEach(submenu=>{
+                submenu.pages.forEach(page=>{
+                  let page_with_md_file = (({ id, slug, submenu, title, description, image, markdown_text, to }) => ({ id, slug, submenu, title,
+                      description, image, markdown_text, to }))(page)
+                  page_routes.push({route: page_with_md_file.to, payload: {page: page_with_md_file}})
+                  page_routes.push({route: '/en' + page_with_md_file.to, payload: {page: page_with_md_file}})
+                  delete page.markdown_text
+                })
+                submenu_routes.push(
+                  {route: submenu.to, payload: {allPagesItems: submenu.pages}},
+                  {route: '/en' + submenu.to, payload: {allPagesItems: submenu.pages}},
+                )
+            })
+
+            menu.submenus.forEach(el=> delete el.pages)
+          })
+
+          // let all_routes = menus_only.concat(submenu_routes, page_routes, basic_routes)
+          let all_routes = menus_only.concat(submenu_routes, page_routes)
+          return all_routes 
         });
     }
   }

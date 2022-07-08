@@ -104,29 +104,8 @@ export default {
     leFooter: footer
   },
 
-  /** async asyncData(context) { */
-    /** if (context.payload) { */
-      /** return { */
-        /** menuItems: context.payload.menuItems */
-      /** } */
-    /** } */
-    /** return await this.$store.dispatch("blog/fetchMenusToBuildBlog") */
-    /** let menus = await this.$store.dispatch("admin/fetchMenus") */
-    /** return {menuItems: menus} */
-  /** }, */
-
-  async fetch() {
-    // Fetch Submenus
-    let menus = await this.$store.dispatch("admin/fetchMenus");
-    if (menus) {
-      this.menuItems = menus
-    }
-  },
-
   data() {
     return {
-      currentMenuItems: [],
-      menuItems: null,
       drawer: null,
       defaultMenuItems: [
         { title: "Home", icon: "mdi-home", to: "index" },
@@ -148,24 +127,10 @@ export default {
     },
 
     async testFF(){
-      console.log(">>>>>>> menuItems: ", this.menuItems)
+      console.log(">>>>>>> ", this.$store.state.menus)
       /** console.log(">>>>>>> process.env.XX: ", process.env.DEV) */
       /** this.$store.dispatch("testFF")  */
       /** this.$store.dispatch("setAlert", {message: "erro rah r rarro rah rr", alertType: "error"}, { root: true }) */
-    },
-
-    getCurrentMenuItems() {
-      if (this.$store.state.user.currentUser) {
-        return this.defaultMenuItems
-          .slice(0, 1)
-          .concat(this.adminMenu)
-          .concat(this.menuItems)
-          .concat(this.defaultMenuItems.slice(1, 2));
-      } else {
-        return this.defaultMenuItems.splice(0, 1)
-        .concat(this.menuItems)
-        .concat(this.defaultMenuItems.slice(1, 2));
-      }
     },
   },
 
@@ -176,27 +141,29 @@ export default {
 
     /** Calculates which Menus the CurrentUser has access and return it concatenated with 
     defaultMenuItems (between Home and About_the_system page). */
-		/** currentMenuItems() { */
-			/** if (this.$store.state.user.currentUser) { */
-				/** return this.defaultMenuItems */
-					/** .slice(0, 1) */
-          /** .concat(this.adminMenu) */
-          /** .concat(this.menuItems) */
-					/** .concat(this.defaultMenuItems.slice(1, 2)); */
-			/** } else { */
-				/** return this.defaultMenuItems.splice(0, 1) */
-        /** .concat(this.menuItems) */
-				/** .concat(this.defaultMenuItems.slice(1, 2)); */
-			/** } */
-		/** }, */
-
+    currentMenuItems() {
+      if (this.$store.state.user.currentUser) {
+        return this.defaultMenuItems
+          .slice(0, 1)
+          .concat(this.adminMenu)
+          .concat(this.$store.state.menus)
+          .concat(this.defaultMenuItems.slice(1, 2));
+      } else {
+        return this.defaultMenuItems.slice(0, 1)
+        .concat(this.$store.state.menus)
+        .concat(this.defaultMenuItems.slice(1, 2));
+      }
+    },
   },
 
-  mounted() {
-    /** console.log(">>>>>>> this.$store.state.test", this.$store.state.test) */
-    /** this.menuItems = this.$store.state.menuItems */
-    this.currentMenuItems = this.getCurrentMenuItems()
-  }
+  /** async fetch() { */
+    /** let menus = await this.$store.dispatch("admin/fetchMenus"); */
+    /** console.log(">>>>>>> menus: ", menus) */
+    /** if (menus) { */
+      /** this.$store.dispatch("setMenus", menus)  */
+    /** } */
+  /** }, */
+
 
 };
 </script>

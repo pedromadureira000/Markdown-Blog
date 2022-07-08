@@ -14,14 +14,12 @@
 
 <script>
   export default {
+    nuxtI18n: {
+      locales: ['pt-BR']
+    },
     data(){ 
       return {
         value: '',
-        /** allSubmenuItems: [ */
-          /** {title: "Menu", icon: "mdi-menu", to: "admin-menu"}, */
-          /** {title: "Sub-Menu", icon: "mdi-dots-vertical-circle-outline", to: "admin-submenu"}, */
-          /** {title: "Page", icon: "mdi-book-open-page-variant", to: "admin-page"}, */
-        /** ], */
       }
     },
 

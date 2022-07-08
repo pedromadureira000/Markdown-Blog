@@ -10,7 +10,6 @@ class Menu(models.Model):
     title = models.CharField("Title", max_length=30)
     icon = models.CharField("Icon", max_length=50)
 
-
 class SubMenu(models.Model):
     class Meta:
         default_permissions = []
