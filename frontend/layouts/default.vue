@@ -126,12 +126,22 @@ export default {
 			this.$store.dispatch('user/logout')
     },
 
-    async testFF(){
+    testFF(){
       console.log(">>>>>>> ", this.$store.state.menus)
+      this.fetchMenus()
       /** console.log(">>>>>>> process.env.XX: ", process.env.DEV) */
       /** this.$store.dispatch("testFF")  */
       /** this.$store.dispatch("setAlert", {message: "erro rah r rarro rah rr", alertType: "error"}, { root: true }) */
     },
+
+    async fetchMenus(){
+      let menus = await this.$store.dispatch("admin/fetchMenus");
+      console.log(">>>>>>> menus: ", menus)
+      if (menus) {
+        this.$store.dispatch("setMenus", menus) 
+      }
+    }
+
   },
 
   computed: {
@@ -156,13 +166,9 @@ export default {
     },
   },
 
-  /** async fetch() { */
-    /** let menus = await this.$store.dispatch("admin/fetchMenus"); */
-    /** console.log(">>>>>>> menus: ", menus) */
-    /** if (menus) { */
-      /** this.$store.dispatch("setMenus", menus)  */
-    /** } */
-  /** }, */
+  mounted(){
+    this.fetchMenus()
+  },
 
 
 };

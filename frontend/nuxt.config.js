@@ -161,7 +161,7 @@ export default {
 
   generate: {
     exclude: [
-      /^\/admin/ // path starts with /admin
+      /^\/admin/
     ],
     // generate routes with dynamic params
     routes: function() {
