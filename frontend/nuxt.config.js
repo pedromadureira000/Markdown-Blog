@@ -145,13 +145,9 @@ export default {
 		}
 	},
 
-  // proxy: _isdev ? {
-		// '/api': 'http://127.0.0.1:8000/',
-	// } : null,
-
-  proxy: true ? {
-		'/api': 'http://127.0.0.1:8000/',
-	} : null,
+  proxy: _isdev ? {
+    '/api': 'http://127.0.0.1:8000/',
+  } : null,
 
 	transpileDependencies: [
 		'vuetify'
@@ -198,9 +194,8 @@ export default {
                   {route: submenu.to, payload: {allPagesItems: submenu.pages}},
                   {route: '/en' + submenu.to, payload: {allPagesItems: submenu.pages}},
                 )
+                delete submenu.pages
             })
-
-            menu.submenus.forEach(el=> delete el.pages)
           })
 
           // let all_routes = menus_only.concat(submenu_routes, page_routes, basic_routes)
