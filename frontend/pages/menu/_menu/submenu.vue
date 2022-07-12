@@ -14,9 +14,6 @@
 
 <script>
   export default {
-    nuxtI18n: {
-      locales: ['pt-BR']
-    },
     data(){ 
       return {
         value: '',

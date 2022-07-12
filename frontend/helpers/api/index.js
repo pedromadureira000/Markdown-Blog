@@ -112,7 +112,7 @@ export default {
 	async fetchSubmenus(menu_id){
 		return await axios({ 
 		method: "get",
-		url: `/api/core/submenus/${menu_id}`,
+		url: `/api/core/submenu/${menu_id}`,
 			}).then((request) => {
 					return request.data 
 				})

@@ -145,7 +145,11 @@ export default {
 		}
 	},
 
-	proxy: _isdev ? {
+  // proxy: _isdev ? {
+		// '/api': 'http://127.0.0.1:8000/',
+	// } : null,
+
+  proxy: true ? {
 		'/api': 'http://127.0.0.1:8000/',
 	} : null,
 
@@ -157,6 +161,7 @@ export default {
     email: process.env.EMAIL,
     phone_number: process.env.PHONE_NUMBER,
     company_name: process.env.COMPANY_NAME,
+    backend_url: process.env.GENERATE_PROXY_URL,
   },	
 
   generate: {
@@ -183,21 +188,24 @@ export default {
             let menu_only = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu)
             let menu_only__en = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu_only)
             menu_only__en.to = '/en' + menu_only__en.to
-            menus_only.push(menu_only, menu_only__en)
+            menus_only.push({route: menu_only.to, payload: {allSubmenuItems: menu.submenus}}, {route: menu_only__en.to, 
+              payload: {allSubmenuItems: menu.submenus}})
+            console.log(">>>>>>> allSubmenuItems: ", menu.submenus)
             //-------/ submenu
-            submenu_routes
             menu.submenus.forEach(submenu=>{
                 submenu.pages.forEach(page=>{
                   let page_with_md_file = (({ id, slug, submenu, title, description, image, markdown_text, to }) => ({ id, slug, submenu, title,
                       description, image, markdown_text, to }))(page)
                   page_routes.push({route: page_with_md_file.to, payload: {page: page_with_md_file}})
                   page_routes.push({route: '/en' + page_with_md_file.to, payload: {page: page_with_md_file}})
+                  console.log(">>>>>>> page: ", page_with_md_file)
                   delete page.markdown_text
                 })
                 submenu_routes.push(
                   {route: submenu.to, payload: {allPagesItems: submenu.pages}},
                   {route: '/en' + submenu.to, payload: {allPagesItems: submenu.pages}},
                 )
+                console.log(">>>>>>> allPagesItems: ", submenu.pages)
             })
 
             menu.submenus.forEach(el=> delete el.pages)

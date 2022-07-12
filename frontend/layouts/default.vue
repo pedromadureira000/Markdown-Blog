@@ -93,6 +93,7 @@
 </template>
 
 <script>
+import axios from '~/plugins/axios'
 import footer from '~/components/Footer.vue';
 import loginDialog from '~/components/login-dialog.vue'
 
