@@ -30,6 +30,8 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
+SERVE_MEDIA_LOCALLY = config('SERVE_MEDIA_LOCALLY', cast=bool)
+
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 AUTH_USER_MODEL = 'user.User'

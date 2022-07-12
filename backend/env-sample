@@ -1,4 +1,5 @@
 DEBUG=True
+SERVE_MEDIA_LOCALLY = False
 SECRET_KEY=Your_secret_key
 ALLOWED_HOSTS=localhost, 127.0.0.1
 

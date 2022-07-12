@@ -178,19 +178,13 @@ export default {
           let submenu_routes = []
           let page_routes = []
 
-          // let basic_routes = [  // TODO This is possible?
-            // {route: '/', payload: {menus: menus_only}},
-            // {route: '/en', payload: {menus: menus_only}},
-          // ]
-
           res.data.forEach(menu => {
             // menus_only
             let menu_only = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu)
             let menu_only__en = (({ id, slug, title, icon, to }) => ({ id, slug, title, icon, to }))(menu_only)
             menu_only__en.to = '/en' + menu_only__en.to
             menus_only.push({route: menu_only.to, payload: {allSubmenuItems: menu.submenus}}, {route: menu_only__en.to, 
-              payload: {allSubmenuItems: menu.submenus}})
-            console.log(">>>>>>> allSubmenuItems: ", menu.submenus)
+              payload: {allSubmenuItems: menu.submenus}}) // TODO Remove pages from ech submenu
             //-------/ submenu
             menu.submenus.forEach(submenu=>{
                 submenu.pages.forEach(page=>{
@@ -198,14 +192,12 @@ export default {
                       description, image, markdown_text, to }))(page)
                   page_routes.push({route: page_with_md_file.to, payload: {page: page_with_md_file}})
                   page_routes.push({route: '/en' + page_with_md_file.to, payload: {page: page_with_md_file}})
-                  console.log(">>>>>>> page: ", page_with_md_file)
                   delete page.markdown_text
                 })
                 submenu_routes.push(
                   {route: submenu.to, payload: {allPagesItems: submenu.pages}},
                   {route: '/en' + submenu.to, payload: {allPagesItems: submenu.pages}},
                 )
-                console.log(">>>>>>> allPagesItems: ", submenu.pages)
             })
 
             menu.submenus.forEach(el=> delete el.pages)
